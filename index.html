@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Geometric Rotation Visualization with Angle Tracing</title>
+  <style>
+    #visualization {
+      text-align: center;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin-top: 20px;
+      color: #333;
+    }
+    svg {
+      border: 2px solid #888;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+      border-radius: 10px;
+    }
+    div {
+      margin: 10px 0;
+    }
+    label {
+      font-size: 16px;
+      font-weight: bold;
+      margin-right: 10px;
+    }
+    input[type="number"] {
+      width: 60px;
+      text-align: center;
+      font-size: 16px;
+    }
+    button {
+      font-size: 14px;
+      padding: 2px 8px;
+      margin: 0 5px;
+      cursor: pointer;
+    }
+    text {
+      font-size: 0.2px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div id="visualization">
+    <svg width="600" height="600" viewBox="-2.5 -2.5 5 5">
+      <defs>
+        <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="blue" />
+        </marker>
+        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="red" />
+        </marker>
+        <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L9,3 z" fill="orange" />
+        </marker>
+      </defs>
+      <circle cx="0" cy="0" r="1" stroke="grey" stroke-dasharray="0.05,0.05" fill="none"/>
+      <circle id="blue-anchor" cx="0.5" cy="0" r="0.05" fill="blue"/>
+      <circle id="rotating-center" cx="0.5" cy="0" r="0.05" fill="red"/>
+      <line id="blue-line" x1="0.5" y1="0" x2="0.5" y2="-2" stroke="blue" stroke-width="0.02" marker-end="url(#arrow-blue)"/>
+      <line id="red-line" x1="0.5" y1="0" x2="0.5" y2="-2" stroke="red" stroke-width="0.02" marker-end="url(#arrow-red)"/>
+      <line id="rotating-spoke" x1="0" y1="0" x2="1" y2="0" stroke="orange" stroke-width="0.02" marker-end="url(#arrow-orange)"/>
+      <text id="angle-label" x="-2.4" y="2.2">Angle Blue-Red: 45°</text>
+      <text id="turning-label" x="-2.4" y="1.9">Turning Angle: 0°</text>
+      <text id="spoke-angle-label" x="-2.4" y="1.6">Spoke Angle: 0°</text>
+      <text id="parallel-message" x="0" y="-1.4" fill="darkgreen"></text>
+    </svg>
+
+    <div>
+      <label>Blue Anchor Pos:</label>
+      <input type="number" id="blue-anchor-pos" min="0" max="1" step="0.01" value="0.5">
+      <button onclick="adjust('blue-anchor-pos', -0.01)">◀</button>
+      <button onclick="adjust('blue-anchor-pos', 0.01)">▶</button>
+
+      <label>Red Anchor Pos:</label>
+      <input type="number" id="red-anchor-pos" min="0" max="1" step="0.01" value="0.5">
+      <button onclick="adjust('red-anchor-pos', -0.01)">◀</button>
+      <button onclick="adjust('red-anchor-pos', 0.01)">▶</button>
+    </div>
+
+    <div>
+      <label>Initial Red Angle:</label>
+      <input type="number" id="init-red-angle" min="0" max="360" value="45">
+      <button onclick="adjust('init-red-angle', -1)">◀</button>
+      <button onclick="adjust('init-red-angle', 1)">▶</button>
+
+      <label>Rotation Angle:</label>
+      <input type="number" id="rot-angle" min="-180" max="180" value="0">
+      <button onclick="adjust('rot-angle', -1)">◀</button>
+      <button onclick="adjust('rot-angle', 1)">▶</button>
+    </div>
+  </div>
+
+  <script>
+    const adjust = (id, step) => {
+      const input = document.getElementById(id);
+      input.value = (parseFloat(input.value) + step).toFixed(2);
+      updateVisualization();
+    };
+
+    ['blue-anchor-pos','red-anchor-pos','init-red-angle','rot-angle'].forEach(id=>{
+      document.getElementById(id).addEventListener('input', updateVisualization);
+    });
+
+    function updateVisualization() {
+      const bPos=parseFloat(document.getElementById('blue-anchor-pos').value);
+      const rPos=parseFloat(document.getElementById('red-anchor-pos').value);
+      const iAngle=parseFloat(document.getElementById('init-red-angle').value);
+      const rot=parseFloat(document.getElementById('rot-angle').value);
+
+      const rotRad=rot*Math.PI/180;
+      const rAngleRad=(iAngle+rot)*Math.PI/180;
+
+      const rX=rPos*Math.cos(rotRad);
+      const rY=rPos*Math.sin(rotRad);
+
+      document.getElementById('blue-anchor').setAttribute('cx',bPos);
+      document.getElementById('rotating-center').setAttribute('cx',rX);
+      document.getElementById('rotating-center').setAttribute('cy',-rY);
+
+      document.getElementById('blue-line').setAttribute('x1',bPos);
+      document.getElementById('blue-line').setAttribute('x2',bPos);
+
+      document.getElementById('red-line').setAttribute('x1',rX);
+      document.getElementById('red-line').setAttribute('y1',-rY);
+      document.getElementById('red-line').setAttribute('x2',rX+2*Math.cos(rAngleRad));
+      document.getElementById('red-line').setAttribute('y2',-(rY+2*Math.sin(rAngleRad)));
+
+      document.getElementById('rotating-spoke').setAttribute('x2',Math.cos(rotRad));
+      document.getElementById('rotating-spoke').setAttribute('y2',-Math.sin(rotRad));
+
+      const angle=Math.abs(((90-(iAngle+rot))+360)%360);
+      document.getElementById('angle-label').textContent=`Angle Blue-Red: ${angle.toFixed(1)}°`;
+      document.getElementById('turning-label').textContent=`Turning Angle: ${rot.toFixed(1)}°`;
+      document.getElementById('spoke-angle-label').textContent=`Spoke Angle: ${rot.toFixed(1)}°`;
+      document.getElementById('parallel-message').textContent=angle<1?'PARALLEL!':'';
+    }
+
+    updateVisualization();
+  </script>
+</body>
+</html>
+
