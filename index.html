@@ -5,40 +5,68 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Geometric Rotation Visualization with Angle Tracing</title>
   <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      padding: 10px;
+    }
     #visualization {
       text-align: center;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin-top: 20px;
-      color: #333;
     }
     svg {
       border: 2px solid #888;
       margin-bottom: 20px;
       background-color: #f9f9f9;
       border-radius: 10px;
+      max-width: 100%;
+      height: auto;
     }
-    div {
+    div.control-group {
       margin: 10px 0;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
     }
-    label {
+    div.control-group label {
       font-size: 16px;
       font-weight: bold;
-      margin-right: 10px;
+      margin: 5px;
     }
-    input[type="number"] {
-      width: 60px;
+    div.control-group input[type="number"] {
+      width: 70px;
       text-align: center;
       font-size: 16px;
+      margin: 5px;
     }
-    button {
-      font-size: 14px;
-      padding: 2px 8px;
-      margin: 0 5px;
+    div.control-group input[type="range"] {
+      width: 150px;
+      margin: 5px;
+    }
+    div.control-group button {
+      font-size: 16px;
+      padding: 4px 10px;
+      margin: 5px;
       cursor: pointer;
     }
     text {
       font-size: 0.2px;
       font-weight: bold;
+    }
+    /* Responsive styling for smaller screens */
+    @media (max-width: 600px) {
+      div.control-group {
+        flex-direction: column;
+      }
+      div.control-group label, 
+      div.control-group input,
+      div.control-group button {
+        margin: 5px 0;
+      }
+      div.control-group input[type="range"] {
+        width: 80%;
+      }
     }
   </style>
 </head>
@@ -67,79 +95,110 @@
       <text id="spoke-angle-label" x="-2.4" y="1.6">Spoke Angle: 0°</text>
       <text id="parallel-message" x="0" y="-1.4" fill="darkgreen"></text>
     </svg>
+  </div>
 
-    <div>
-      <label>Blue Anchor Pos:</label>
-      <input type="number" id="blue-anchor-pos" min="0" max="1" step="0.01" value="0.5">
-      <button onclick="adjust('blue-anchor-pos', -0.01)">◀</button>
-      <button onclick="adjust('blue-anchor-pos', 0.01)">▶</button>
+  <div class="control-group">
+    <label>Blue Anchor Pos:</label>
+    <input type="number" id="blue-anchor-pos" min="0" max="1" step="0.01" value="0.5">
+    <input type="range" id="blue-anchor-pos-slider" min="0" max="1" step="0.01" value="0.5">
+    <button onclick="adjust('blue-anchor-pos', -0.01)">◀</button>
+    <button onclick="adjust('blue-anchor-pos', 0.01)">▶</button>
+  </div>
 
-      <label>Red Anchor Pos:</label>
-      <input type="number" id="red-anchor-pos" min="0" max="1" step="0.01" value="0.5">
-      <button onclick="adjust('red-anchor-pos', -0.01)">◀</button>
-      <button onclick="adjust('red-anchor-pos', 0.01)">▶</button>
-    </div>
+  <div class="control-group">
+    <label>Red Anchor Pos:</label>
+    <input type="number" id="red-anchor-pos" min="0" max="1" step="0.01" value="0.5">
+    <input type="range" id="red-anchor-pos-slider" min="0" max="1" step="0.01" value="0.5">
+    <button onclick="adjust('red-anchor-pos', -0.01)">◀</button>
+    <button onclick="adjust('red-anchor-pos', 0.01)">▶</button>
+  </div>
 
-    <div>
-      <label>Initial Red Angle:</label>
-      <input type="number" id="init-red-angle" min="0" max="360" value="45">
-      <button onclick="adjust('init-red-angle', -1)">◀</button>
-      <button onclick="adjust('init-red-angle', 1)">▶</button>
+  <div class="control-group">
+    <label>Initial Red Angle:</label>
+    <input type="number" id="init-red-angle" min="0" max="360" value="45">
+    <input type="range" id="init-red-angle-slider" min="0" max="360" step="1" value="45">
+    <button onclick="adjust('init-red-angle', -1)">◀</button>
+    <button onclick="adjust('init-red-angle', 1)">▶</button>
+  </div>
 
-      <label>Rotation Angle:</label>
-      <input type="number" id="rot-angle" min="-180" max="180" value="0">
-      <button onclick="adjust('rot-angle', -1)">◀</button>
-      <button onclick="adjust('rot-angle', 1)">▶</button>
-    </div>
+  <div class="control-group">
+    <label>Rotation Angle:</label>
+    <input type="number" id="rot-angle" min="-180" max="180" value="0">
+    <input type="range" id="rot-angle-slider" min="-180" max="180" step="1" value="0">
+    <button onclick="adjust('rot-angle', -1)">◀</button>
+    <button onclick="adjust('rot-angle', 1)">▶</button>
   </div>
 
   <script>
     const adjust = (id, step) => {
       const input = document.getElementById(id);
+      // Update the number input value
       input.value = (parseFloat(input.value) + step).toFixed(2);
+      // If a corresponding slider exists, update it too
+      const slider = document.getElementById(id + '-slider');
+      if (slider) {
+        slider.value = input.value;
+      }
       updateVisualization();
     };
 
-    ['blue-anchor-pos','red-anchor-pos','init-red-angle','rot-angle'].forEach(id=>{
-      document.getElementById(id).addEventListener('input', updateVisualization);
+    const syncInputs = (id) => {
+      const numberInput = document.getElementById(id);
+      const sliderInput = document.getElementById(id + '-slider');
+      if (sliderInput) {
+        sliderInput.value = numberInput.value;
+      }
+      updateVisualization();
+    };
+
+    // Attach event listeners to both the number inputs and the sliders
+    ['blue-anchor-pos','red-anchor-pos','init-red-angle','rot-angle'].forEach(id => {
+      document.getElementById(id).addEventListener('input', () => syncInputs(id));
+      const slider = document.getElementById(id + '-slider');
+      if (slider) {
+        slider.addEventListener('input', () => {
+          document.getElementById(id).value = slider.value;
+          updateVisualization();
+        });
+      }
     });
 
     function updateVisualization() {
-      const bPos=parseFloat(document.getElementById('blue-anchor-pos').value);
-      const rPos=parseFloat(document.getElementById('red-anchor-pos').value);
-      const iAngle=parseFloat(document.getElementById('init-red-angle').value);
-      const rot=parseFloat(document.getElementById('rot-angle').value);
+      const bPos = parseFloat(document.getElementById('blue-anchor-pos').value);
+      const rPos = parseFloat(document.getElementById('red-anchor-pos').value);
+      const iAngle = parseFloat(document.getElementById('init-red-angle').value);
+      const rot = parseFloat(document.getElementById('rot-angle').value);
 
-      const rotRad=rot*Math.PI/180;
-      const rAngleRad=(iAngle+rot)*Math.PI/180;
+      const rotRad = rot * Math.PI / 180;
+      const rAngleRad = (iAngle + rot) * Math.PI / 180;
 
-      const rX=rPos*Math.cos(rotRad);
-      const rY=rPos*Math.sin(rotRad);
+      const rX = rPos * Math.cos(rotRad);
+      const rY = rPos * Math.sin(rotRad);
 
-      document.getElementById('blue-anchor').setAttribute('cx',bPos);
-      document.getElementById('rotating-center').setAttribute('cx',rX);
-      document.getElementById('rotating-center').setAttribute('cy',-rY);
+      document.getElementById('blue-anchor').setAttribute('cx', bPos);
+      document.getElementById('rotating-center').setAttribute('cx', rX);
+      document.getElementById('rotating-center').setAttribute('cy', -rY);
 
-      document.getElementById('blue-line').setAttribute('x1',bPos);
-      document.getElementById('blue-line').setAttribute('x2',bPos);
+      document.getElementById('blue-line').setAttribute('x1', bPos);
+      document.getElementById('blue-line').setAttribute('x2', bPos);
 
-      document.getElementById('red-line').setAttribute('x1',rX);
-      document.getElementById('red-line').setAttribute('y1',-rY);
-      document.getElementById('red-line').setAttribute('x2',rX+2*Math.cos(rAngleRad));
-      document.getElementById('red-line').setAttribute('y2',-(rY+2*Math.sin(rAngleRad)));
+      document.getElementById('red-line').setAttribute('x1', rX);
+      document.getElementById('red-line').setAttribute('y1', -rY);
+      document.getElementById('red-line').setAttribute('x2', rX + 2 * Math.cos(rAngleRad));
+      document.getElementById('red-line').setAttribute('y2', -(rY + 2 * Math.sin(rAngleRad)));
 
-      document.getElementById('rotating-spoke').setAttribute('x2',Math.cos(rotRad));
-      document.getElementById('rotating-spoke').setAttribute('y2',-Math.sin(rotRad));
+      document.getElementById('rotating-spoke').setAttribute('x2', Math.cos(rotRad));
+      document.getElementById('rotating-spoke').setAttribute('y2', -Math.sin(rotRad));
 
-      const angle=Math.abs(((90-(iAngle+rot))+360)%360);
-      document.getElementById('angle-label').textContent=`Angle Blue-Red: ${angle.toFixed(1)}°`;
-      document.getElementById('turning-label').textContent=`Turning Angle: ${rot.toFixed(1)}°`;
-      document.getElementById('spoke-angle-label').textContent=`Spoke Angle: ${rot.toFixed(1)}°`;
-      document.getElementById('parallel-message').textContent=angle<1?'PARALLEL!':'';
+      const angle = Math.abs(((90 - (iAngle + rot)) + 360) % 360);
+      document.getElementById('angle-label').textContent = `Angle Blue-Red: ${angle.toFixed(1)}°`;
+      document.getElementById('turning-label').textContent = `Turning Angle: ${rot.toFixed(1)}°`;
+      document.getElementById('spoke-angle-label').textContent = `Spoke Angle: ${rot.toFixed(1)}°`;
+      document.getElementById('parallel-message').textContent = angle < 1 ? 'PARALLEL!' : '';
     }
 
+    // Initial update on page load
     updateVisualization();
   </script>
 </body>
 </html>
-
