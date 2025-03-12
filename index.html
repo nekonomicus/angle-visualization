@@ -3,198 +3,232 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Enhanced Winkelvisualisierung mit Oval</title>
+  <title>Angle Visualization with Oval</title>
   <style>
+    :root {
+      --primary-color: #4361ee;
+      --secondary-color: #e63946;
+      --accent-color: #ff9f1c;
+      --highlight-color: #7209b7;
+      --background-color: #f8f9fa;
+      --card-background: #fff;
+      --border-color: #495057;
+      --text-color: #333;
+      --control-bg: #e9ecef;
+      --button-color: #4361ee;
+      --button-hover: #3a56d4;
+    }
+    
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: #333;
-      padding: 10px;
-      background-color: #f8f9fa;
-      max-width: 960px;
+      color: var(--text-color);
+      padding: 20px;
+      background-color: var(--background-color);
+      max-width: 1000px;
       margin: 0 auto;
+      line-height: 1.5;
     }
+    
     #visualization {
       text-align: center;
-      margin-top: 20px;
+      margin: 20px auto;
+      background-color: var(--card-background);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+      max-width: 800px;
+      transition: all 0.3s ease;
     }
+    
     svg {
-      border: 2px solid #495057;
+      border: 2px solid var(--border-color);
       margin-bottom: 20px;
-      background-color: #fff;
+      background-color: var(--card-background);
       border-radius: 10px;
       max-width: 100%;
       height: auto;
       box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      touch-action: none; /* Improves touch handling */
+      transition: all 0.3s ease;
     }
-    .dashboard {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 20px;
+    
+    .controls-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 15px;
+      margin-top: 30px;
     }
+    
     .control-group {
-      background-color: #e9ecef;
-      padding: 12px;
-      border-radius: 8px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    }
-    .control-group h3 {
-      margin-top: 0;
-      color: #495057;
-      font-size: 1rem;
-      margin-bottom: 10px;
-      border-bottom: 1px solid #ced4da;
-      padding-bottom: 5px;
-    }
-    .controls {
+      margin: 0;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px;
+      justify-content: space-between;
+      background-color: var(--control-bg);
+      padding: 12px 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: all 0.2s ease-in-out;
     }
-    .control-item {
+    
+    .control-group:hover {
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    
+    .control-group label {
+      font-size: 16px;
+      font-weight: 600;
+      margin: 5px 0;
+      color: var(--border-color);
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    
+    .control-inputs {
       display: flex;
+      width: 100%;
       align-items: center;
-      margin: 5px;
+      justify-content: space-between;
+      gap: 10px;
     }
-    label {
-      font-size: 14px;
-      font-weight: bold;
-      margin-right: 8px;
-      color: #495057;
-      min-width: 120px;
-    }
-    input[type="number"] {
+    
+    .control-group input[type="number"] {
       width: 70px;
       text-align: center;
-      font-size: 14px;
+      font-size: 16px;
       border: 1px solid #ced4da;
-      border-radius: 4px;
-      padding: 6px;
+      border-radius: 6px;
+      padding: 6px 8px;
+      box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
     }
-    input[type="range"] {
-      width: 150px;
+    
+    .control-group input[type="range"] {
+      flex: 1;
+      margin: 0 10px;
+      height: 6px;
+      border-radius: 3px;
+      background: #ced4da;
+      outline: none;
+      -webkit-appearance: none;
     }
-    .btn-group {
-      display: flex;
-      gap: 5px;
+    
+    .control-group input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--button-color);
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    button {
-      font-size: 14px;
+    
+    .control-group input[type="range"]::-webkit-slider-thumb:hover {
+      background: var(--button-hover);
+      transform: scale(1.2);
+    }
+    
+    .control-group input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--button-color);
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    
+    .control-group input[type="range"]::-moz-range-thumb:hover {
+      background: var(--button-hover);
+      transform: scale(1.2);
+    }
+    
+    .control-group button {
+      font-size: 16px;
       padding: 6px 12px;
       cursor: pointer;
-      background-color: #6c757d;
+      background-color: var(--button-color);
       color: white;
       border: none;
-      border-radius: 4px;
-      transition: background-color 0.2s;
-    }
-    button:hover {
-      background-color: #5a6268;
-    }
-    button.primary {
-      background-color: #4361ee;
-    }
-    button.primary:hover {
-      background-color: #3a56d4;
-    }
-    .info-panel {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 15px;
-      justify-content: center;
-    }
-    .info-item {
-      background-color: #fff;
-      padding: 8px 12px;
       border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      font-weight: bold;
-      min-width: 180px;
-      text-align: center;
+      transition: all 0.2s;
     }
-    .info-item.highlight {
-      background-color: #e6f2ff;
+    
+    .control-group button:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
-    .draggable-handle {
+    
+    .draggable {
       cursor: move;
-      fill-opacity: 0.2;
+      fill-opacity: 0.7;
+      transition: fill-opacity 0.2s, transform 0.2s;
     }
-    .draggable-handle:hover {
-      fill-opacity: 0.4;
+    
+    .draggable:hover {
+      fill-opacity: 1;
+      transform: scale(1.2);
     }
-    .help-text {
-      font-size: 14px;
-      color: #6c757d;
-      margin-top: 10px;
-      text-align: center;
-    }
+    
     text {
-      font-size: 0.15px;
       font-weight: bold;
       fill: #343a40;
     }
-    .angle-display {
-      font-size: 0.12px;
-      font-weight: bold;
+    
+    .title {
+      color: var(--border-color);
+      text-align: center;
+      font-weight: 600;
+      margin-top: 0;
+      font-size: 1.8rem;
+      margin-bottom: 30px;
     }
-    /* Responsive styling for smaller screens */
-    @media (max-width: 768px) {
-      .control-item {
-        width: 100%;
+    
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+      }
+      
+      .control-group {
         flex-direction: column;
         align-items: flex-start;
       }
-      label {
-        margin-bottom: 5px;
+      
+      .control-inputs {
+        flex-wrap: wrap;
       }
-      input[type="range"] {
+      
+      .control-group label, 
+      .control-group input,
+      .control-group button {
+        margin: 5px 0;
+      }
+      
+      .control-group input[type="range"] {
         width: 100%;
-      }
-      .info-item {
-        width: 100%;
-      }
-    }
-    @media (max-width: 480px) {
-      body {
-        padding: 5px;
-      }
-      .btn-group button {
-        padding: 8px;
-        font-size: 12px;
-      }
-      input[type="number"] {
-        width: 60px;
+        margin: 10px 0;
       }
     }
   </style>
 </head>
 <body>
+  <h1 class="title">Angle Visualization with Oval</h1>
+  
   <div id="visualization">
-    <svg width="600" height="600" viewBox="-2.5 -2.5 5 5" id="angle-svg">
+    <svg width="600" height="600" viewBox="-2.5 -2.5 5 5" id="svg-element">
       <defs>
-        <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <marker id="arrow-blue" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#4361ee" />
         </marker>
-        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <marker id="arrow-red" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#e63946" />
         </marker>
-        <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto">
+        <marker id="arrow-orange" markerWidth="10" markerHeight="10" refX="0" refY="3" orient="auto">
           <path d="M0,0 L0,6 L9,3 z" fill="#ff9f1c" />
         </marker>
-        <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="0.05" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <pattern id="grid" width="0.2" height="0.2" patternUnits="userSpaceOnUse">
-          <path d="M 0.2 0 L 0 0 L 0 0.2" fill="none" stroke="#e9ecef" stroke-width="0.01"/>
-        </pattern>
       </defs>
-      
-      <!-- Grid background -->
-      <rect x="-2.5" y="-2.5" width="5" height="5" fill="url(#grid)" opacity="0.6"/>
       
       <!-- Fixed oval (solid) -->
       <ellipse cx="0" cy="0" rx="1.4" ry="0.9" stroke="#495057" fill="none" stroke-width="0.03"/>
@@ -204,168 +238,128 @@
         <!-- Rotating oval (dashed) -->
         <ellipse id="rotating-oval" cx="0" cy="0" rx="1.45" ry="0.95" stroke="#6c757d" stroke-dasharray="0.1,0.05" fill="none" stroke-width="0.02"/>
         
+        <!-- Rotation handle on the oval -->
+        <circle id="rotation-handle" cx="1.45" cy="0" r="0.1" fill="#6c757d" class="draggable" data-drag-type="rotation" stroke="#fff" stroke-width="0.02"/>
+        
         <!-- Red Anchor - drilled into the rotating oval -->
-        <circle id="rotating-center" cx="0.7" cy="0.3" r="0.05" fill="#e63946"/>
+        <circle id="rotating-center" cx="0.7" cy="0.3" r="0.1" fill="#e63946" class="draggable" data-drag-type="red-anchor"/>
         
         <!-- Red Line - drilled into the rotating oval -->
-        <line id="red-line" x1="0.7" y1="0.3" x2="0.7" y2="-1.7" stroke="#e63946" stroke-width="0.025" marker-end="url(#arrow-red)"/>
+        <line id="red-line" x1="0.7" y1="0.3" x2="0.7" y2="-1.7" stroke="#e63946" stroke-width="0.03" marker-end="url(#arrow-red)"/>
         
-        <!-- Draggable handle for red line -->
-        <circle id="red-handle" cx="0.7" cy="-1.5" r="0.08" fill="#e63946" class="draggable-handle" filter="url(#glow)"/>
+        <!-- Angle handler for red line -->
+        <circle id="red-angle-handle" cx="0.7" cy="-1.5" r="0.1" fill="#e63946" class="draggable" data-drag-type="red-angle" fill-opacity="0.7"/>
         
         <!-- Full diameter rotating spoke -->
-        <line id="rotating-spoke" x1="-1.45" y1="0" x2="1.45" y2="0" stroke="#ff9f1c" stroke-width="0.02" marker-end="url(#arrow-orange)"/>
+        <line id="rotating-spoke" x1="-1.45" y1="0" x2="1.45" y2="0" stroke="#ff9f1c" stroke-width="0.03" marker-end="url(#arrow-orange)"/>
       </g>
       
       <!-- Center point marker -->
       <circle cx="0" cy="0" r="0.04" fill="#212529" stroke="none"/>
       
       <!-- Blue Anchor -->
-      <circle id="blue-anchor" cx="1.4" cy="0" r="0.05" fill="#4361ee"/>
+      <circle id="blue-anchor" cx="1.4" cy="0" r="0.1" fill="#4361ee" class="draggable" data-drag-type="blue-anchor"/>
       
       <!-- Fixed spoke -->
-      <line id="fixed-spoke" x1="-1.4" y1="0" x2="1.4" y2="0" stroke="#ff9f1c" stroke-width="0.02" marker-end="url(#arrow-orange)"/>
+      <line id="fixed-spoke" x1="-1.4" y1="0" x2="1.4" y2="0" stroke="#ff9f1c" stroke-width="0.03" marker-end="url(#arrow-orange)"/>
       
       <!-- Blue Line -->
-      <line id="blue-line" x1="1.4" y1="0" x2="1.4" y2="-2" stroke="#4361ee" stroke-width="0.025" marker-end="url(#arrow-blue)"/>
-      
-      <!-- Draggable handle for blue line -->
-      <circle id="blue-handle" cx="1.4" cy="-1.8" r="0.08" fill="#4361ee" class="draggable-handle" filter="url(#glow)"/>
+      <line id="blue-line" x1="1.4" y1="0" x2="1.4" y2="4" stroke="#4361ee" stroke-width="0.03" marker-end="url(#arrow-blue)"/>
       
       <!-- Angle arc between orange spokes -->
-      <path id="spoke-angle-arc" d="M 0.3 0 A 0.3 0.3 0 0 1 0.3 0" stroke="#ff9f1c" stroke-width="0.03" fill="none" fill-opacity="0.1"/>
+      <path id="spoke-angle-arc" d="M 0.3 0 A 0.3 0.3 0 0 1 0.3 0" stroke="#ff9f1c" stroke-width="0.03" fill="none"/>
       
       <!-- Angle arc between blue and red arrows -->
-      <path id="arrow-angle-arc" d="M 0.5 -0.3 A 0.3 0.3 0 0 1 0.5 -0.3" stroke="#7209b7" stroke-width="0.03" fill="none" fill-opacity="0.1"/>
+      <path id="arrow-angle-arc" d="M 0.5 -0.3 A 0.3 0.3 0 0 1 0.5 -0.3" stroke="#7209b7" stroke-width="0.03" fill="none"/>
       
       <!-- Labels with better positioning -->
-      <g id="info-labels" transform="translate(-2.25, 2.3)">
-        <text id="angle-label" class="angle-display" y="0" fill="#7209b7">Winkel Blau-Rot: 45°</text>
-        <text id="turning-label" class="angle-display" y="-0.25" fill="#ff9f1c">Drehwinkel: 0°</text>
-        <text id="spoke-angle-label" class="angle-display" y="-0.5" fill="#ff9f1c">Speichenwinkel: 0°</text>
-        <text id="oval-dimensions" class="angle-display" y="-0.75" fill="#495057">Oval: 1.40 × 0.90</text>
-      </g>
-      
-      <text id="parallel-message" x="0" y="-1.4" fill="#2a9d8f" text-anchor="middle" font-size="0.18"></text>
+      <text id="angle-label" x="-2.4" y="2.3" font-size="0.20">Angle Blue-Red: 45°</text>
+      <text id="turning-label" x="-2.4" y="1.9" font-size="0.20">Rotation Angle: 0°</text>
+      <text id="spoke-angle-label" x="-2.4" y="1.5" font-size="0.20">Spoke Angle: 0°</text>
+      <text id="red-angle-label" x="-2.4" y="1.1" font-size="0.20">Red Arrow: 90°</text>
+      <text id="parallel-message" x="0" y="-1.4" fill="#2a9d8f" text-anchor="middle" font-size="0.20"></text>
       
       <!-- Small angle labels near the arcs -->
-      <text id="spoke-angle-value" x="0.28" y="0.25" fill="#ff9f1c" font-size="0.12" text-anchor="middle">0°</text>
-      <text id="arrow-angle-value" x="0.68" y="-0.35" fill="#7209b7" font-size="0.12" text-anchor="middle">45°</text>
-      
-      <!-- Red Angle Label -->
-      <text id="red-angle-value" x="0.9" y="-1.5" fill="#e63946" font-size="0.12" text-anchor="start">90°</text>
+      <text id="spoke-angle-value" x="0.28" y="0.25" fill="#ff9f1c" font-size="0.18" text-anchor="middle" font-weight="bold">0°</text>
+      <text id="arrow-angle-value" x="0.68" y="-0.35" fill="#7209b7" font-size="0.18" text-anchor="middle" font-weight="bold">45°</text>
     </svg>
   </div>
-  
-  <div class="help-text">
-    <p>Tip: Ziehen Sie die blauen und roten Pfeilspitzen, um die Winkel direkt anzupassen</p>
-  </div>
 
-  <div class="info-panel">
-    <div class="info-item highlight">
-      <span id="angle-display">Winkel Blau-Rot: 45.0°</span>
-    </div>
-    <div class="info-item">
-      <span id="turning-display">Drehwinkel: 0.0°</span>
-    </div>
-    <div class="info-item">
-      <span id="red-angle-display">Rot-Pfeil: 90.0°</span>
-    </div>
-    <div class="info-item">
-      <span id="oval-display">Oval: 1.40 × 0.90</span>
-    </div>
-  </div>
-
-  <div class="dashboard">
+  <div class="controls-container">
     <div class="control-group">
-      <h3>Grundeinstellungen</h3>
-      <div class="controls">
-        <div class="control-item">
-          <label>Blauer Anker:</label>
-          <input type="number" id="blue-anchor-pos" min="0" max="1" step="0.01" value="1">
-          <input type="range" id="blue-anchor-pos-slider" min="0" max="1" step="0.01" value="1">
-          <div class="btn-group">
-            <button onclick="adjust('blue-anchor-pos', -0.01)">◀</button>
-            <button onclick="adjust('blue-anchor-pos', 0.01)">▶</button>
-          </div>
-        </div>
-        
-        <div class="control-item">
-          <label>Drehwinkel:</label>
-          <input type="number" id="rot-angle" min="-180" max="180" value="0">
-          <input type="range" id="rot-angle-slider" min="-180" max="180" step="1" value="0">
-          <div class="btn-group">
-            <button onclick="adjust('rot-angle', -1)">◀</button>
-            <button onclick="adjust('rot-angle', 1)">▶</button>
-          </div>
-        </div>
+      <label>Blue Anchor Position:</label>
+      <div class="control-inputs">
+        <input type="number" id="blue-anchor-pos" min="0" max="1" step="0.01" value="1">
+        <input type="range" id="blue-anchor-pos-slider" min="0" max="1" step="0.01" value="1">
+        <button onclick="adjust('blue-anchor-pos', -0.01)">◀</button>
+        <button onclick="adjust('blue-anchor-pos', 0.01)">▶</button>
       </div>
     </div>
 
     <div class="control-group">
-      <h3>Roter Anker</h3>
-      <div class="controls">
-        <div class="control-item">
-          <label>Roter Anker X:</label>
-          <input type="number" id="red-anchor-x" min="-1" max="1" step="0.01" value="0.7">
-          <input type="range" id="red-anchor-x-slider" min="-1" max="1" step="0.01" value="0.7">
-          <div class="btn-group">
-            <button onclick="adjust('red-anchor-x', -0.01)">◀</button>
-            <button onclick="adjust('red-anchor-x', 0.01)">▶</button>
-          </div>
-        </div>
-        
-        <div class="control-item">
-          <label>Roter Anker Y:</label>
-          <input type="number" id="red-anchor-y" min="-1" max="1" step="0.01" value="0.3">
-          <input type="range" id="red-anchor-y-slider" min="-1" max="1" step="0.01" value="0.3">
-          <div class="btn-group">
-            <button onclick="adjust('red-anchor-y', -0.01)">◀</button>
-            <button onclick="adjust('red-anchor-y', 0.01)">▶</button>
-          </div>
-        </div>
-        
-        <div class="control-item">
-          <label>Roter Pfeil Winkel:</label>
-          <input type="number" id="init-red-angle" min="0" max="360" value="90">
-          <input type="range" id="init-red-angle-slider" min="0" max="360" step="1" value="90">
-          <div class="btn-group">
-            <button onclick="adjust('init-red-angle', -1)">◀</button>
-            <button onclick="adjust('init-red-angle', 1)">▶</button>
-          </div>
-        </div>
+      <label>Red Anchor X:</label>
+      <div class="control-inputs">
+        <input type="number" id="red-anchor-x" min="-1" max="1" step="0.01" value="0.7">
+        <input type="range" id="red-anchor-x-slider" min="-1" max="1" step="0.01" value="0.7">
+        <button onclick="adjust('red-anchor-x', -0.01)">◀</button>
+        <button onclick="adjust('red-anchor-x', 0.01)">▶</button>
       </div>
     </div>
 
     <div class="control-group">
-      <h3>Ovalgröße</h3>
-      <div class="controls">
-        <div class="control-item">
-          <label>Oval Breite:</label>
-          <input type="number" id="oval-width" min="0.2" max="2" step="0.05" value="1.40">
-          <input type="range" id="oval-width-slider" min="0.2" max="2" step="0.05" value="1.40">
-          <div class="btn-group">
-            <button onclick="adjust('oval-width', -0.05)">◀</button>
-            <button onclick="adjust('oval-width', 0.05)">▶</button>
-          </div>
-        </div>
-        
-        <div class="control-item">
-          <label>Oval Höhe:</label>
-          <input type="number" id="oval-height" min="0.2" max="2" step="0.05" value="0.90">
-          <input type="range" id="oval-height-slider" min="0.2" max="2" step="0.05" value="0.90">
-          <div class="btn-group">
-            <button onclick="adjust('oval-height', -0.05)">◀</button>
-            <button onclick="adjust('oval-height', 0.05)">▶</button>
-          </div>
-        </div>
+      <label>Red Anchor Y:</label>
+      <div class="control-inputs">
+        <input type="number" id="red-anchor-y" min="-1" max="1" step="0.01" value="0.3">
+        <input type="range" id="red-anchor-y-slider" min="-1" max="1" step="0.01" value="0.3">
+        <button onclick="adjust('red-anchor-y', -0.01)">◀</button>
+        <button onclick="adjust('red-anchor-y', 0.01)">▶</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Red Arrow Angle:</label>
+      <div class="control-inputs">
+        <input type="number" id="init-red-angle" min="0" max="360" value="90">
+        <input type="range" id="init-red-angle-slider" min="0" max="360" step="1" value="90">
+        <button onclick="adjust('init-red-angle', -1)">◀</button>
+        <button onclick="adjust('init-red-angle', 1)">▶</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Rotation Angle:</label>
+      <div class="control-inputs">
+        <input type="number" id="rot-angle" min="-180" max="180" value="0">
+        <input type="range" id="rot-angle-slider" min="-180" max="180" step="1" value="0">
+        <button onclick="adjust('rot-angle', -1)">◀</button>
+        <button onclick="adjust('rot-angle', 1)">▶</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Oval Width:</label>
+      <div class="control-inputs">
+        <input type="number" id="oval-width" min="0.2" max="2" step="0.05" value="1.40">
+        <input type="range" id="oval-width-slider" min="0.2" max="2" step="0.05" value="1.40">
+        <button onclick="adjust('oval-width', -0.05)">◀</button>
+        <button onclick="adjust('oval-width', 0.05)">▶</button>
+      </div>
+    </div>
+
+    <div class="control-group">
+      <label>Oval Height:</label>
+      <div class="control-inputs">
+        <input type="number" id="oval-height" min="0.2" max="2" step="0.05" value="0.90">
+        <input type="range" id="oval-height-slider" min="0.2" max="2" step="0.05" value="0.90">
+        <button onclick="adjust('oval-height', -0.05)">◀</button>
+        <button onclick="adjust('oval-height', 0.05)">▶</button>
       </div>
     </div>
   </div>
 
   <script>
     // Helper function to calculate SVG arc path
-    function describeArc(x, y, radius, startAngle, endAngle, clockwise = false) {
+    function describeArc(x, y, radius, startAngle, endAngle) {
       // Convert angles from degrees to radians
       const start = (startAngle * Math.PI) / 180;
       const end = (endAngle * Math.PI) / 180;
@@ -377,25 +371,13 @@
       const endY = y - radius * Math.sin(end); // Subtract for SVG coordinates (y-axis inverted)
       
       // Determine if the arc should be drawn the long way around
-      let largeArcFlag = "0";
-      if (clockwise) {
-        // For clockwise, if end angle is less than start angle, add 360 to end
-        const adjustedEnd = endAngle < startAngle ? endAngle + 360 : endAngle;
-        largeArcFlag = (adjustedEnd - startAngle > 180) ? "1" : "0";
-      } else {
-        // For counter-clockwise, if start angle is less than end angle, add 360 to start
-        const adjustedStart = startAngle < endAngle ? startAngle + 360 : startAngle;
-        largeArcFlag = (adjustedStart - endAngle > 180) ? "1" : "0";
-      }
+      const largeArcFlag = Math.abs(endAngle - startAngle) > 180 ? "1" : "0";
       
       // Create the arc path
       // SVG parameter order: rx ry x-axis-rotation large-arc-flag sweep-flag x y
-      // sweep-flag: 1 for clockwise, 0 for counterclockwise
-      const sweepFlag = clockwise ? "1" : "0";
-      
       const d = [
         "M", startX, startY, 
-        "A", radius, radius, 0, largeArcFlag, sweepFlag, endX, endY
+        "A", radius, radius, 0, largeArcFlag, "1", endX, endY
       ].join(" ");
       
       return d;
@@ -407,10 +389,10 @@
     }
     
     // Function to convert from screen to SVG coordinates
-    function screenToSVGCoords(svg, event) {
+    function screenToSVGCoords(event, svg) {
       const pt = svg.createSVGPoint();
       
-      // Get the touch or mouse position
+      // Get touch or mouse position
       if (event.touches) {
         pt.x = event.touches[0].clientX;
         pt.y = event.touches[0].clientY;
@@ -424,19 +406,15 @@
       return { x: svgP.x, y: svgP.y };
     }
     
-    // Function to calculate angle from center to point in degrees
+    // Function to calculate angle from center to point
     function calculateAngle(cx, cy, px, py) {
-      // Calculate angle in radians (math convention, 0 = right, counterclockwise)
-      const radians = Math.atan2(-(py - cy), px - cx); // Negate y because SVG y is inverted
-      
-      // Convert to degrees and normalize to 0-360
-      let degrees = (radians * 180 / Math.PI) % 360;
+      const radians = Math.atan2(-(py - cy), px - cx); // Negate y for SVG coord system
+      let degrees = radians * 180 / Math.PI;
       if (degrees < 0) degrees += 360;
-      
       return degrees;
     }
     
-    // Adjust function updated with smoother transitions
+    // Function to adjust a value using buttons
     const adjust = (id, step) => {
       const input = document.getElementById(id);
       // Update the number input value
@@ -449,6 +427,7 @@
       updateVisualization();
     };
 
+    // Function to sync inputs when changed
     const syncInputs = (id) => {
       const numberInput = document.getElementById(id);
       const sliderInput = document.getElementById(id + '-slider');
@@ -470,6 +449,163 @@
         });
       }
     });
+    
+    // Drag functionality
+    const svg = document.getElementById('svg-element');
+    let activeDrag = null;
+    let dragType = null;
+    
+    // Add smoothing to the drag operations
+    let lastX = null;
+    let lastY = null;
+    const smoothingFactor = 0.3; // Lower values make movement smoother but more laggy
+    
+    function smoothCoordinate(newValue, lastValue) {
+      if (lastValue === null) return newValue;
+      return lastValue + smoothingFactor * (newValue - lastValue);
+    }
+    
+    // Setup drag handlers
+    function initDragHandlers() {
+      // Helper to prevent default behaviors for touch events
+      function preventDefaults(e) {
+        if (e.target.classList.contains('draggable')) {
+          e.preventDefault();
+        }
+      }
+      
+      // Start drag on mouse down or touch start
+      function startDrag(e) {
+        if (e.target.classList.contains('draggable')) {
+          activeDrag = e.target.id;
+          dragType = e.target.getAttribute('data-drag-type');
+          if (e.preventDefault) e.preventDefault();
+        }
+      }
+      
+      // Handle drag movement
+      function moveDrag(e) {
+        if (!activeDrag) return;
+        if (e.preventDefault) e.preventDefault();
+        
+        const coords = screenToSVGCoords(e, svg);
+        handleDragAction(coords);
+      }
+      
+      // End drag on mouse up or touch end
+      function endDrag() {
+        activeDrag = null;
+        dragType = null;
+        // Reset smoothing values
+        lastX = null;
+        lastY = null;
+      }
+      
+      // Add all event listeners
+      svg.addEventListener('mousedown', startDrag);
+      svg.addEventListener('touchstart', startDrag, { passive: false });
+      
+      window.addEventListener('mousemove', moveDrag);
+      window.addEventListener('touchmove', moveDrag, { passive: false });
+      
+      window.addEventListener('mouseup', endDrag);
+      window.addEventListener('touchend', endDrag);
+      
+      // Prevent scrolling when touching draggable elements
+      svg.addEventListener('touchstart', preventDefaults, { passive: false });
+      svg.addEventListener('touchmove', preventDefaults, { passive: false });
+    }
+    
+    // Handle different drag operations
+    function handleDragAction(coords) {
+      if (dragType === 'blue-anchor') {
+        // Blue anchor can only move horizontally along x-axis
+        // Calculate position as a proportion of oval width (0 to 1)
+        const ovalWidth = parseFloat(document.getElementById('oval-width').value);
+        
+        // Apply smoothing to x-coordinate
+        coords.x = smoothCoordinate(coords.x, lastX);
+        lastX = coords.x;
+        
+        let newPos = coords.x / ovalWidth;
+        
+        // Clamp to valid range (0 to 1)
+        newPos = Math.max(0, Math.min(1, newPos));
+        
+        // Update the position
+        document.getElementById('blue-anchor-pos').value = newPos.toFixed(2);
+        document.getElementById('blue-anchor-pos-slider').value = newPos.toFixed(2);
+        
+        updateVisualization();
+      } 
+      else if (dragType === 'red-anchor') {
+        // Red anchor can move in x and y within the rotating group
+        const rot = parseFloat(document.getElementById('rot-angle').value);
+        
+        // Apply smoothing to coordinates
+        coords.x = smoothCoordinate(coords.x, lastX);
+        coords.y = smoothCoordinate(coords.y, lastY);
+        lastX = coords.x;
+        lastY = coords.y;
+        
+        // First, convert coords back to un-rotated coordinate system
+        const rotRad = -rot * Math.PI / 180;
+        const dx = coords.x;
+        const dy = coords.y;
+        
+        // Apply inverse rotation to get coordinates in the rotating group's system
+        const rotX = dx * Math.cos(rotRad) - dy * Math.sin(rotRad);
+        const rotY = dx * Math.sin(rotRad) + dy * Math.cos(rotRad);
+        
+        // Update the x and y positions
+        document.getElementById('red-anchor-x').value = rotX.toFixed(2);
+        document.getElementById('red-anchor-y').value = rotY.toFixed(2);
+        document.getElementById('red-anchor-x-slider').value = rotX.toFixed(2);
+        document.getElementById('red-anchor-y-slider').value = rotY.toFixed(2);
+        
+        updateVisualization();
+      }
+      else if (dragType === 'red-angle') {
+        // Red angle handle changes just the angle of the red line
+        const rot = parseFloat(document.getElementById('rot-angle').value);
+        const rBaseX = parseFloat(document.getElementById('red-anchor-x').value);
+        const rBaseY = parseFloat(document.getElementById('red-anchor-y').value);
+        
+        // Apply smoothing to coordinates
+        coords.x = smoothCoordinate(coords.x, lastX);
+        coords.y = smoothCoordinate(coords.y, lastY);
+        lastX = coords.x;
+        lastY = coords.y;
+        
+        // Convert to rotating group's coordinate system
+        const rotRad = -rot * Math.PI / 180;
+        const dx = coords.x;
+        const dy = coords.y;
+        
+        // Apply inverse rotation
+        const rotX = dx * Math.cos(rotRad) - dy * Math.sin(rotRad);
+        const rotY = dx * Math.sin(rotRad) + dy * Math.cos(rotRad);
+        
+        // Calculate angle from red anchor to dragged point
+        let angle = calculateAngle(rBaseX, rBaseY, rotX, rotY);
+        
+        // Update the red line angle
+        document.getElementById('init-red-angle').value = angle.toFixed(0);
+        document.getElementById('init-red-angle-slider').value = angle.toFixed(0);
+        
+        updateVisualization();
+      }
+      else if (dragType === 'rotation') {
+        // Calculate the angle from center to the drag point
+        const angle = calculateAngle(0, 0, coords.x, coords.y);
+        
+        // Update rotation angle
+        document.getElementById('rot-angle').value = angle.toFixed(0);
+        document.getElementById('rot-angle-slider').value = angle.toFixed(0);
+        
+        updateVisualization();
+      }
+    }
 
     function updateVisualization() {
       // Get all values from controls
@@ -509,31 +645,27 @@
       
       // Calculate the end point of the red line using the initial angle
       const redLineRad = iAngle * Math.PI / 180;
-      const redLineLength = 2; // Length of the line
+      const redLineLength = 3; // 50% longer line
       const redLineEndX = rBaseX + redLineLength * Math.cos(redLineRad);
       const redLineEndY = rBaseY - redLineLength * Math.sin(redLineRad); // Subtract because SVG Y is inverted
       
       document.getElementById('red-line').setAttribute('x2', redLineEndX);
       document.getElementById('red-line').setAttribute('y2', redLineEndY);
       
-      // Position the red handle slightly before the end to account for the arrow
-      const handleOffset = 0.2; // Offset from the end to account for the arrow
+      // Position the red angle handle
+      const handleOffset = 0.2; // Offset from the end for arrow
       const redHandleX = rBaseX + (redLineLength - handleOffset) * Math.cos(redLineRad);
       const redHandleY = rBaseY - (redLineLength - handleOffset) * Math.sin(redLineRad);
-      document.getElementById('red-handle').setAttribute('cx', redHandleX);
-      document.getElementById('red-handle').setAttribute('cy', redHandleY);
+      document.getElementById('red-angle-handle').setAttribute('cx', redHandleX);
+      document.getElementById('red-angle-handle').setAttribute('cy', redHandleY);
 
-      // Update blue anchor and line
+      // Update blue anchor and line - now pointing downward
       document.getElementById('blue-anchor').setAttribute('cx', bX);
       document.getElementById('blue-anchor').setAttribute('cy', bY);
       document.getElementById('blue-line').setAttribute('x1', bX);
       document.getElementById('blue-line').setAttribute('y1', bY);
       document.getElementById('blue-line').setAttribute('x2', bX);
-      document.getElementById('blue-line').setAttribute('y2', -2);
-      
-      // Position the blue handle
-      document.getElementById('blue-handle').setAttribute('cx', bX);
-      document.getElementById('blue-handle').setAttribute('cy', -1.8); // Slightly above the end
+      document.getElementById('blue-line').setAttribute('y2', 4); // Extended length pointing down
 
       // Update the fixed spoke
       document.getElementById('fixed-spoke').setAttribute('x1', -ovalWidth);
@@ -543,56 +675,78 @@
       
       // Update the rotating spoke
       // Since it's in the rotating group, it's directly horizontal
-      document.getElementById('rotating-spoke').setAttribute('x1', -ovalWidth * 1.05);
+      const ovalWidthScaled = ovalWidth * 1.05;
+      document.getElementById('rotating-spoke').setAttribute('x1', -ovalWidthScaled);
       document.getElementById('rotating-spoke').setAttribute('y1', 0);
-      document.getElementById('rotating-spoke').setAttribute('x2', ovalWidth * 1.05);
+      document.getElementById('rotating-spoke').setAttribute('x2', ovalWidthScaled);
       document.getElementById('rotating-spoke').setAttribute('y2', 0);
+      
+      // Update the rotation handle position
+      const rotRad = rot * Math.PI / 180;
+      const ovalHeightScaled = ovalHeight * 1.05;
+      document.getElementById('rotation-handle').setAttribute('cx', ovalWidthScaled * Math.cos(rotRad));
+      document.getElementById('rotation-handle').setAttribute('cy', ovalHeightScaled * Math.sin(rotRad));
 
-      // Calculate the angle between spokes in the clock convention
-      // 0° when both at 3 o'clock, increases as rotating spoke moves counterclockwise
+      // Calculate the angle between spokes (rotation angle)
       const spokeAngleClock = Math.abs(rot);
       
-      // Create the spoke angle arc
-      // Draw arc based on the rotation angle
-      const spokeArcPath = describeArc(0, 0, 0.3, 0, rot, rot < 0);
+      // Draw the spoke angle arc at the center
+      const spokeArcPath = describeArc(0, 0, 0.3, 0, rot);
       document.getElementById('spoke-angle-arc').setAttribute('d', spokeArcPath);
       
       // Calculate angles for blue and red lines
-      // Blue is vertical (90° in math angle)
-      const blueAngle = 90;
+      // Blue is now pointing downward (270° in math angle)
+      const blueAngle = 270;
       // Red line rotates with the oval, so its absolute angle is its initial angle + rotation
       const redAngle = normalizeAngle(iAngle + rot);
       
-      // Calculate the smaller angle between them
+      // Calculate the smaller angle between blue and red lines
       let arrowAngleClock = Math.abs(blueAngle - redAngle);
       if (arrowAngleClock > 180) arrowAngleClock = 360 - arrowAngleClock;
       
-      // More intelligent placement of the angle arc between blue and red
-      // Find a good intermediate point between the two lines for the arc center
-      const blueLength = 2; // Length of blue line
-      const blueEndX = bX;
-      const blueEndY = -blueLength; // End of blue line
+      // Calculate intersection of blue and red lines
+      // Blue line is vertical, so x-coordinate is bX
+      const intersectionX = bX;
       
-      // Mid point between visible parts of the lines
-      const midX = (bX + redHandleX) / 2;
-      const midY = (blueEndY + redHandleY) / 2;
+      // Calculate the rotated red anchor position
+      const rotatedRedX = rBaseX * Math.cos(rotRad) - rBaseY * Math.sin(rotRad);
+      const rotatedRedY = rBaseX * Math.sin(rotRad) + rBaseY * Math.cos(rotRad);
       
-      // Create the arc for the blue-red angle
-      // Determine direction of the arc
-      let clockwise;
-      if (redAngle > blueAngle) {
-        clockwise = (redAngle - blueAngle <= 180);
+      // Calculate red line direction after rotation
+      const rotatedRedAngleRad = (iAngle + rot) * Math.PI / 180;
+      
+      // Line equation for rotated red line: y = mx + b
+      // m = slope = tan(angle)
+      const slope = -Math.tan(rotatedRedAngleRad);
+      
+      // Calculate b (y-intercept) using rotated red anchor point
+      const yIntercept = rotatedRedY - slope * rotatedRedX;
+      
+      // Find y-coordinate at x = bX
+      const intersectionY = slope * bX + yIntercept;
+      
+      // Draw the angle arc at the intersection point
+      const arcRadius = 0.25;
+      const smallerAngle = Math.min(normalizeAngle(redAngle), normalizeAngle(blueAngle));
+      const largerAngle = Math.max(normalizeAngle(redAngle), normalizeAngle(blueAngle));
+      
+      // Choose the shorter arc
+      let startAngle, endAngle;
+      if (largerAngle - smallerAngle <= 180) {
+        startAngle = smallerAngle;
+        endAngle = largerAngle;
       } else {
-        clockwise = !(blueAngle - redAngle <= 180);
+        startAngle = largerAngle;
+        endAngle = smallerAngle + 360;
       }
       
-      // Create the arc path
-      const arrowArcPath = describeArc(midX, midY, 0.4, blueAngle, redAngle, clockwise);
+      // Draw the arc
+      const arrowArcPath = describeArc(intersectionX, intersectionY, arcRadius, startAngle, endAngle);
       document.getElementById('arrow-angle-arc').setAttribute('d', arrowArcPath);
       
       // Position the angle value labels near their respective arcs
       // For the spoke angle
-      if (spokeAngleClock > 3) {  // Only show if angle is significant
+      if (spokeAngleClock > 5) {  // Only show if angle is significant
         // Calculate a position halfway along the arc
         const halfAngle = rot / 2;
         const halfAngleRad = halfAngle * Math.PI / 180;
@@ -608,7 +762,42 @@
         document.getElementById('spoke-angle-value').style.visibility = 'hidden';
       }
       
-      // For the blue-red angle
-      if (arrowAngleClock > 3) {  // Only show if angle is significant
-        // Calculate a position halfway along the arc
-        const halfAngle = (blueAngle + redAngle) / 2;
+      // For the blue-red angle label
+      if (arrowAngleClock > 5) {  // Only show if angle is significant
+        // Position halfway between the angles
+        const midAngle = (startAngle + endAngle) / 2;
+        const midAngleRad = midAngle * Math.PI / 180;
+        const labelRadius = arcRadius * 1.4;
+        
+        const labelX = intersectionX + labelRadius * Math.cos(midAngleRad);
+        const labelY = intersectionY - labelRadius * Math.sin(midAngleRad);
+        
+        document.getElementById('arrow-angle-value').setAttribute('x', labelX);
+        document.getElementById('arrow-angle-value').setAttribute('y', labelY);
+        document.getElementById('arrow-angle-value').textContent = `${arrowAngleClock.toFixed(0)}°`;
+        document.getElementById('arrow-angle-value').style.visibility = 'visible';
+      } else {
+        document.getElementById('arrow-angle-value').style.visibility = 'hidden';
+      }
+      
+      // Update all labels
+      document.getElementById('angle-label').textContent = `Angle Blue-Red: ${arrowAngleClock.toFixed(1)}°`;
+      document.getElementById('turning-label').textContent = `Rotation Angle: ${rot.toFixed(1)}°`;
+      document.getElementById('spoke-angle-label').textContent = `Spoke Angle: ${spokeAngleClock.toFixed(1)}°`;
+      document.getElementById('red-angle-label').textContent = `Red Arrow: ${iAngle.toFixed(1)}°`;
+      
+      // Check if lines are parallel (or nearly so)
+      const parallelThreshold = 3; // Degrees
+      if (arrowAngleClock < parallelThreshold || arrowAngleClock > 180 - parallelThreshold) {
+        document.getElementById('parallel-message').textContent = "Lines are nearly parallel!";
+      } else {
+        document.getElementById('parallel-message').textContent = "";
+      }
+    }
+    
+    // Initialize the visualization and drag handlers
+    initDragHandlers();
+    updateVisualization();
+  </script>
+</body>
+</html>
